@@ -25,6 +25,7 @@ jobs:
       - name: Extract changelog for this release
         run: |
           awk '/^## \[${GITHUB_REF_NAME}\]/ {flag=1; next} /^## \[/ && !/^## \[${GITHUB_REF_NAME}\]/ {flag=0} flag' CHANGELOG.md > RELEASE_NOTES.md
+          cat RELEASE_NOTES.md
 
       - name: Create Release
         uses: softprops/action-gh-release@v2.3.2
