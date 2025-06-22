@@ -20,7 +20,7 @@ jobs:
           rm -rf .git .github
 
       - name: Zip Spoon directory
-        run: zip -r SimpleMicMute-${GITHUB_REF_NAME}.zip .
+        run: zip -r SimpleMicMute-${GITHUB_REF_NAME}.zip ../SimpleMicMute.spoon
 
       - name: Extract changelog for this release
         run: |
