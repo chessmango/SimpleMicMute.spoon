@@ -29,7 +29,9 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2.3.2
         with:
-          files: SimpleMicMute-${{ github.ref_name }}.zip
           body_path: RELEASE_NOTES.md
+          draft: false
+          files: SimpleMicMute-${{ github.ref_name }}.zip
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
