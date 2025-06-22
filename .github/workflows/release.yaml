@@ -14,12 +14,12 @@ jobs:
 
       - name: Prepare .spoon directory for zipping
         run: |
-          mkdir SimpleMicMute.spoon
-          cp -r * SimpleMicMute.spoon/
-          rm -rf SimpleMicMute.spoon/.git SimpleMicMute.spoon/.github
+          mkdir ../SimpleMicMute.spoon
+          cp -r * ../SimpleMicMute.spoon/
+          rm -rf ../SimpleMicMute.spoon/.git ../SimpleMicMute.spoon/.github
 
       - name: Zip Spoon directory
-        run: zip -r SimpleMicMute-${GITHUB_REF_NAME}.zip SimpleMicMute.spoon
+        run: zip -r SimpleMicMute-${GITHUB_REF_NAME}.zip ../SimpleMicMute.spoon
 
       - name: Create Release
         uses: softprops/action-gh-release@v2.3.2
