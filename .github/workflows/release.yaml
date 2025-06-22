@@ -22,9 +22,14 @@ jobs:
       - name: Zip Spoon directory
         run: zip -r SimpleMicMute-${GITHUB_REF_NAME}.zip .
 
+      - name: Extract changelog for this release
+        run: |
+          awk '/^## \[${GITHUB_REF_NAME}\]/ {flag=1; next} /^## \[/ && !/^## \[${GITHUB_REF_NAME}\]/ {flag=0} flag' CHANGELOG.md > RELEASE_NOTES.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v2.3.2
         with:
           files: SimpleMicMute-${{ github.ref_name }}.zip
+          body_path: RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
