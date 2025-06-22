@@ -33,7 +33,7 @@ jobs:
         with:
           body_path: RELEASE_NOTES.md
           draft: false
-          files: SimpleMicMute-${{ github.ref_name }}.zip
+          files: ../SimpleMicMute-${{ github.ref_name }}.zip
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
