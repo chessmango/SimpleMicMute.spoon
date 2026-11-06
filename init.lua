@@ -1,4 +1,4 @@
---- === SimpleMicMute ===
+--- === MicMute ===
 ---
 --- A simple Hammerspoon Spoon to quickly mute/unmute your Mac's microphone
 ---
@@ -9,9 +9,9 @@
 ---   - Optional custom sounds for mute/unmute actions
 ---   - Restore previous input volume when unmuting
 
---- === SimpleMicMute:configure ===
+--- === MicMute:configure ===
 --- Method
---- Configures the SimpleMicMute Spoon.
+--- Configures the MicMute Spoon.
 ---
 --- Parameters:
 ---  * opts - A table of options:
@@ -20,10 +20,11 @@
 ---    * hotkey (table) - Hotkey to toggle mute/unmute (default: nil)
 ---    * enableAlert (boolean) - Show alert when toggling (default: false)
 ---    * sounds (table) - Table with 'mute' and/or 'unmute' sound file paths (default: nil)
+---    * menuIconTemplate (boolean) - Render the menubar icon as a template so macOS tints it to the menubar colour (default: false)
 ---
 --- Example:
----   hs.loadSpoon("SimpleMicMute")
----   spoon.SimpleMicMute:configure{
+---   hs.loadSpoon("MicMute")
+---   spoon.MicMute:configure{
 ---     defaultVolume = 50,
 ---     enableMenubar = true,
 ---     hotkey = {{"ctrl", "shift"}, "Q"},
@@ -34,15 +35,15 @@
 ---     }
 ---   }
 
---- === SimpleMicMute:toggleMic ===
+--- === MicMute:toggleMic ===
 --- Method
 --- Toggles the microphone between muted and unmuted states.
 
---- === SimpleMicMute:muteMic ===
+--- === MicMute:muteMic ===
 --- Method
 --- Mutes the microphone.
 
---- === SimpleMicMute:unmuteMic ===
+--- === MicMute:unmuteMic ===
 --- Method
 --- Unmutes the microphone and restores the previous input volume.
 
@@ -50,11 +51,11 @@ local obj = {}
 obj.__index = obj
 
 -- Metadata
-obj.name = "SimpleMicMute"
+obj.name = "MicMute"
 obj.version = "1.0"
-obj.author = "chessmango"
+obj.author = "laluowen"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
-obj.homepage = "https://github.com/chessmango/SimpleMicMute.spoon"
+obj.homepage = "https://github.com/laluowen/MicMute.spoon"
 
 -- Defaults
 obj.defaultVolume = 50
@@ -64,15 +65,38 @@ obj.lastInputVolume = obj.defaultVolume
 obj.micMenu = nil
 obj.enableAlert = false
 obj.sounds = nil
+obj.micIcons = nil
+obj.menuIconTemplate = false
+
+local function renderIcon(emoji, points, strike, template)
+  local px = points * 2
+  local canvas = hs.canvas.new({ x = 0, y = 0, w = px, h = px })
+  canvas[1] = { type = "text", text = emoji, textSize = px * 0.78, frame = { x = 0, y = px * 0.05, w = px, h = px }, textAlignment = "center" }
+  if strike then
+    canvas[2] = {
+      type = "segments",
+      coordinates = { { x = px * 0.08, y = px * 0.08 }, { x = px * 0.92, y = px * 0.92 } },
+      strokeColor = { red = 0.9, green = 0.1, blue = 0.1, alpha = 1 },
+      strokeWidth = px * 0.14,
+      action = "stroke",
+    }
+    if template then
+      canvas[2].compositeRule = "destinationOut"
+    end
+  end
+  local image = canvas:imageFromCanvas()
+  canvas:delete()
+  image:size({ w = points, h = points }, true)
+  image:template(template)
+  return image
+end
 
 function obj:updateMicMenu()
   if not obj.micMenu then return end
   local ok, current = hs.osascript.applescript('input volume of (get volume settings)')
-  if ok and tonumber(current) == 0 then
-    obj.micMenu:setTitle("📵")
-  else
-    obj.micMenu:setTitle("🎙")
-  end
+  local muted = ok and tonumber(current) == 0
+  obj.micMenu:setTitle(nil)
+  obj.micMenu:setIcon(muted and obj.micIcons.muted or obj.micIcons.unmuted, obj.menuIconTemplate)
 end
 
 function obj:muteMic()
@@ -118,6 +142,11 @@ function obj:bindHotkeys(mapping)
 end
 
 function obj:start()
+  self.micIcons = {
+    unmuted = renderIcon("🎙", 18, false, self.menuIconTemplate),
+    muted = renderIcon("🎙", 18, true, self.menuIconTemplate),
+  }
+
   -- Menubar
   if self.enableMenubar then
     self.micMenu = hs.menubar.new()
@@ -140,6 +169,7 @@ function obj:configure(opts)
     if opts.hotkey then self.hotkey = opts.hotkey end
     if opts.enableAlert ~= nil then self.enableAlert = opts.enableAlert end
     if opts.sounds then self.sounds = opts.sounds end
+    if opts.menuIconTemplate ~= nil then self.menuIconTemplate = opts.menuIconTemplate end
   end
   self.lastInputVolume = self.defaultVolume
 
