@@ -29,7 +29,7 @@ jobs:
           awk "/^## \[${GITHUB_REF_NAME//./\\.}\]/ {flag=1; next} /^## \[/ && !/^## \[${GITHUB_REF_NAME//./\\.}\]/ {flag=0} flag" CHANGELOG.md > RELEASE_NOTES.md
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2.3.2
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           body_path: RELEASE_NOTES.md
           draft: false
