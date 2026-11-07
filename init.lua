@@ -52,7 +52,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "MicMute"
-obj.version = "1.0"
+obj.version = "1.0.0" -- x-release-please-version
 obj.author = "laluowen"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.homepage = "https://github.com/laluowen/MicMute.spoon"
