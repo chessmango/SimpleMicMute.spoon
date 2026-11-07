@@ -3,6 +3,12 @@ name: Release Please
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      target-branch:
+        description: Branch to release from, for backports
+        required: false
+        default: main
 
 permissions: {}
 
@@ -22,6 +28,7 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          target-branch: ${{ github.event.inputs.target-branch || 'main' }}
 
   package:
     needs: release-please
