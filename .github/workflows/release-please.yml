@@ -38,12 +38,13 @@ jobs:
         env:
           TAG: ${{ needs.release-please.outputs.tag_name }}
         run: |
-          mkdir -p stage/MicMute.spoon
-          cp init.lua README.md LICENSE.md CHANGELOG.md stage/MicMute.spoon/
-          (cd stage && zip -r "../MicMute-${TAG}.zip" MicMute.spoon)
+          VERSION="${TAG#v}"
+          git archive --format=zip --prefix=MicMute.spoon/ -o "MicMute-${VERSION}.zip" HEAD
 
       - name: Upload to release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.release-please.outputs.tag_name }}
-        run: gh release upload "$TAG" "MicMute-${TAG}.zip" --clobber
+        run: |
+          VERSION="${TAG#v}"
+          gh release upload "$TAG" "MicMute-${VERSION}.zip" --clobber
