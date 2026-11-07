@@ -38,13 +38,11 @@ jobs:
         env:
           TAG: ${{ needs.release-please.outputs.tag_name }}
         run: |
-          VERSION="${TAG#v}"
-          git archive --format=zip --prefix=MicMute.spoon/ -o "MicMute-${VERSION}.zip" HEAD
+          git archive --format=zip --prefix=MicMute.spoon/ -o "MicMute-${TAG}.zip" HEAD
 
       - name: Upload to release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.release-please.outputs.tag_name }}
         run: |
-          VERSION="${TAG#v}"
-          gh release upload "$TAG" "MicMute-${VERSION}.zip" --clobber
+          gh release upload "$TAG" "MicMute-${TAG}.zip" --clobber
